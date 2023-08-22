@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Mail\Mailable;
@@ -31,7 +32,7 @@ class Exercise1Test extends TestCase
 
     public function test_existe_el_modelo_notificationshipped(): void
     {
-        $this->assertTrue(class_exists('App\Mail\NotificationShipped'));
+        $this->assertTrue(class_exists('App\Mail\NotificationShipped') || class_exists('App\Notifications\NotificationShipped'));
     }
 
     public function test_direccion_correcta_de_correo_del_sistema(): void
@@ -95,11 +96,19 @@ class Exercise1Test extends TestCase
         $this->expectsDatabaseQueryCount(10);
     }
 
-    public function test_comando_users_send_Notification_ejecutado_correctamente(): void
+    public function test_comando_users_send_notification_ejecutado_correctamente(): void
     {
         Mail::fake();
         $this->runSeeds();
         $this->artisan('users:send-newsletter')->assertSuccessful();
-        Mail::assertQueued('App\Mail\NotificationShipped');
+        Mail::assertQueued('App\Notifications\NotificationShipped');
+    }
+
+    public function test_comando_users_send_mail_ejecutado_correctamente(): void
+    {
+        Mail::fake();
+        $this->runSeeds();
+        $this->artisan('users:send-newsletter')->assertSuccessful();
+        Notification::assertQueued('App\Mail\NotificationShipped');
     }
 }

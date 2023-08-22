@@ -54,7 +54,7 @@ class ExerciseCommand extends Command
     }
 
     private function saveEnv(): void {
-        file_put_contents($this->content, $this->content);
+        file_put_contents(base_path('.env'), $this->content);
     }
 
     private function setEnv(string $key, string $value): void
